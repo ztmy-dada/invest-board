@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="refresh" content="300">
+<title>売買シグナル ダッシュボード</title>
+<style>*,*::before,*::after{box-sizing:border-box;} body,h1,h2,h3,p,dl,dd,ul{margin:0;}
+
+:root{
+  --paper:#F3F4F1; --card:#FFFFFF; --ink:#15191D; --ink-2:#4A5259; --ink-3:#7C858C;
+  --rule:#D9DCD6; --rule-2:#E9EBE6;
+  --up:#C43D28; --down:#1D5B92; --brass:#B8862F; --brass-soft:#F3E7CC;
+  --up-soft:#FBE9E4; --down-soft:#E3EDF6;
+  --shadow:0 1px 2px rgba(21,25,29,.06), 0 4px 14px rgba(21,25,29,.05);
+  --mono:ui-monospace,"SFMono-Regular","Cascadia Mono","Consolas","Menlo",monospace;
+  --sans:system-ui,-apple-system,"Segoe UI","Hiragino Kaku Gothic ProN","Yu Gothic UI",
+         "Noto Sans JP","Meiryo",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#12161A; --card:#1A1F25; --ink:#E7EAEC; --ink-2:#A3ACB4; --ink-3:#78828A;
+    --rule:#2B3239; --rule-2:#232A31;
+    --up:#E8705A; --down:#6BA6DC; --brass:#D9A94E; --brass-soft:#3A3222;
+    --up-soft:#33221F; --down-soft:#1B2A38;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.28);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12161A; --card:#1A1F25; --ink:#E7EAEC; --ink-2:#A3ACB4; --ink-3:#78828A;
+  --rule:#2B3239; --rule-2:#232A31;
+  --up:#E8705A; --down:#6BA6DC; --brass:#D9A94E; --brass-soft:#3A3222;
+  --up-soft:#33221F; --down-soft:#1B2A38;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.28);
+}
+:root[data-theme="light"]{
+  --paper:#F3F4F1; --card:#FFFFFF; --ink:#15191D; --ink-2:#4A5259; --ink-3:#7C858C;
+  --rule:#D9DCD6; --rule-2:#E9EBE6;
+  --up:#C43D28; --down:#1D5B92; --brass:#B8862F; --brass-soft:#F3E7CC;
+  --up-soft:#FBE9E4; --down-soft:#E3EDF6;
+  --shadow:0 1px 2px rgba(21,25,29,.06), 0 4px 14px rgba(21,25,29,.05);
+}
+
+body{background:var(--paper); color:var(--ink); font-family:var(--sans);
+     line-height:1.55; -webkit-font-smoothing:antialiased;}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums;
+     font-feature-settings:"tnum" 1;}
+.up{color:var(--up);} .down{color:var(--down);} .flat{color:var(--ink-3);}
+
+.page{max-width:1080px; margin:0 auto; padding:28px 20px 72px;
+      display:flex; flex-direction:column; gap:34px;}
+
+/* ---- ヘッダ ---- */
+.masthead{display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 16px;
+          padding-bottom:16px; border-bottom:2px solid var(--ink);}
+.masthead h1{font-size:1.35rem; font-weight:650; letter-spacing:.01em; margin:0;}
+.masthead .tag{font-size:.7rem; letter-spacing:.14em; text-transform:uppercase;
+               color:var(--ink-3); font-weight:600;}
+.masthead .asof{margin-left:auto; font-size:.78rem; color:var(--ink-2);}
+
+.notice{background:var(--brass-soft); border-left:3px solid var(--brass);
+        padding:11px 14px; font-size:.8rem; color:var(--ink-2); border-radius:0 4px 4px 0;}
+
+/* ---- 統計ストリップ ---- */
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px;
+       background:var(--rule); border:1px solid var(--rule); border-radius:6px;
+       overflow:hidden;}
+.stat{background:var(--card); padding:13px 15px; display:flex; flex-direction:column;
+      gap:3px;}
+.stat .label{font-size:.68rem; letter-spacing:.09em; text-transform:uppercase;
+             color:var(--ink-3); font-weight:600;}
+.stat .value{font-size:1.32rem; font-weight:600; letter-spacing:-.01em;}
+.stat .sub{font-size:.74rem; color:var(--ink-3);}
+
+/* ---- セクション ---- */
+section{display:flex; flex-direction:column; gap:14px;}
+h2{font-size:.78rem; letter-spacing:.16em; text-transform:uppercase; font-weight:700;
+   color:var(--ink-2); margin:0; display:flex; align-items:center; gap:10px;}
+h2::after{content:""; flex:1; height:1px; background:var(--rule);}
+.hint{font-size:.78rem; color:var(--ink-3); margin:-6px 0 0;}
+.empty{font-size:.85rem; color:var(--ink-3); background:var(--card);
+       border:1px dashed var(--rule); border-radius:6px; padding:18px; margin:0;}
+
+/* ---- 注文票 ---- */
+.tickets{display:grid; grid-template-columns:repeat(auto-fill,minmax(232px,1fr)); gap:12px;}
+.ticket{background:var(--card); border:1px solid var(--rule); border-radius:6px;
+        padding:13px 15px 15px; box-shadow:var(--shadow); border-left-width:4px;}
+.ticket.buy{border-left-color:var(--up);} .ticket.sell{border-left-color:var(--down);}
+.ticket header{display:flex; align-items:center; gap:8px; margin-bottom:6px;}
+.ticket .side{font-size:.7rem; font-weight:700; letter-spacing:.08em; padding:2px 7px;
+              border-radius:3px;}
+.ticket.buy .side{background:var(--up-soft); color:var(--up);}
+.ticket.sell .side{background:var(--down-soft); color:var(--down);}
+.ticket .code{font-size:.86rem; font-weight:600;}
+.ticket .mkt{margin-left:auto; font-size:.66rem; letter-spacing:.1em; color:var(--ink-3);
+             font-weight:600;}
+.ticket h3{font-size:.94rem; font-weight:600; margin:0 0 9px; line-height:1.35;
+           text-wrap:balance;}
+.ticket dl{margin:0; display:flex; flex-direction:column; gap:4px;}
+.kv{display:flex; justify-content:space-between; gap:12px; font-size:.8rem;}
+.kv dt{color:var(--ink-3); margin:0;} .kv dd{margin:0; font-weight:600;}
+
+/* ---- 表 ---- */
+.table-wrap{overflow-x:auto; background:var(--card); border:1px solid var(--rule);
+            border-radius:6px;}
+.grid-table{border-collapse:collapse; width:100%; font-size:.82rem; min-width:640px;}
+.grid-table th{text-align:right; font-size:.68rem; letter-spacing:.07em;
+               text-transform:uppercase; color:var(--ink-3); font-weight:600;
+               padding:9px 12px; border-bottom:1px solid var(--rule); white-space:nowrap;}
+.grid-table th:first-child, .grid-table td:first-child{text-align:left;}
+.grid-table th:last-child, .grid-table td:last-child{text-align:left;}
+.grid-table td{padding:9px 12px; border-bottom:1px solid var(--rule-2); text-align:right;
+               white-space:nowrap;}
+.grid-table tbody tr:last-child td{border-bottom:none;}
+.grid-table .code{font-weight:600;}
+.grid-table .nm{display:block; font-size:.72rem; color:var(--ink-3); font-weight:400;}
+.grid-table .stop{color:var(--down); font-weight:600;}
+.grid-table .dt{color:var(--ink-2);}
+.grid-table td.warn{color:var(--brass); font-weight:600;}
+
+/* ---- チャート ---- */
+.chart-wrap{background:var(--card); border:1px solid var(--rule); border-radius:6px;
+            padding:10px 6px 4px;}
+.chart-wrap svg{width:100%; height:auto; display:block;}
+.grid{stroke:var(--rule-2); stroke-width:1;}
+.baseline{stroke:var(--ink-3); stroke-width:1; stroke-dasharray:3 3; opacity:.6;}
+.axis{fill:var(--ink-3); font-size:10px; font-family:var(--mono);}
+.line{fill:none; stroke-linejoin:round; stroke-linecap:round;}
+.line.strat{stroke:var(--ink); stroke-width:2.1;}
+.area{fill:var(--ink); opacity:.055; stroke:none;}
+.line.bm1{stroke:var(--down); stroke-width:1.3; opacity:.85;}
+.line.bm2{stroke:var(--up); stroke-width:1.3; opacity:.7;}
+.line.bm3{stroke:var(--ink-3); stroke-width:1.3; stroke-dasharray:4 3;}
+.endpoint{fill:var(--ink); stroke:var(--card); stroke-width:2;}
+.legend{list-style:none; margin:8px 0 0; padding:0; display:flex; flex-wrap:wrap;
+        gap:6px 20px; font-size:.78rem; color:var(--ink-2);}
+.legend li{display:flex; align-items:center; gap:7px;}
+.legend b{font-weight:600; color:var(--ink);}
+.swatch{width:13px; height:2.5px; border-radius:2px; flex:none;}
+.swatch.strat{background:var(--ink); height:3px;}
+.swatch.bm1{background:var(--down);} .swatch.bm2{background:var(--up);}
+.swatch.bm3{background:var(--ink-3);}
+
+/* ---- 脚注 ---- */
+footer{border-top:1px solid var(--rule); padding-top:16px; font-size:.74rem;
+       color:var(--ink-3); display:flex; flex-direction:column; gap:6px;}
+footer strong{color:var(--ink-2); font-weight:600;}
+
+@media (max-width:560px){
+  .page{padding:20px 14px 56px; gap:26px;}
+  .masthead .asof{margin-left:0; width:100%;}
+  .stat .value{font-size:1.15rem;}
+  .tickets{grid-template-columns:1fr;}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important;}}
+</style></head><body><div class="page">
+<header class="masthead">
+  <span class="tag">Swing Strategy · Demo</span>
+  <h1>売買シグナル ダッシュボード</h1>
+  <span class="asof">データ基準 2026-09-04<br>生成 2026-09-05 22:06</span>
+</header>
+
+<p class="notice"><strong>これはデモトレード(仮想売買)の記録です。</strong>
+投資助言ではありません。実際の発注判断はご自身で行ってください。
+約定は翌営業日の寄付を前提に、往復 10bps のコストを差し引いて計算しています。</p>
+
+<div class="stats"><div class="stat">
+  <span class="label">評価額</span>
+  <span class="value num ">81,423,922 円</span><span class="sub">現金 24,453,043 円</span>
+</div><div class="stat">
+  <span class="label">開始来リターン</span>
+  <span class="value num up">+1.78%</span><span class="sub">2026-08-06 開始</span>
+</div><div class="stat">
+  <span class="label">対 50/50 複合</span>
+  <span class="value num up">+2.60%</span><span class="sub">複合 -0.82%</span>
+</div><div class="stat">
+  <span class="label">最大ドローダウン</span>
+  <span class="value num down">-2.93%</span><span class="sub">建玉 12 / 投資比率 70%</span>
+</div></div>
+
+<section>
+  <h2>翌営業日の注文</h2>
+  
+  <p class="empty">翌営業日に出す注文はありません。エントリー条件を満たす銘柄がないか、市場レジームが弱気のため待機します。</p>
+</section>
+
+<section>
+  <h2>保有中の建玉と逆指値</h2>
+  <p class="hint">逆指値は毎日引け後に切り上げます。ここに出ている値へ更新してください。
+  次回決算が近い銘柄は決算前に手仕舞います。</p>
+  <div class="table-wrap"><table class="grid-table">
+<thead><tr><th>銘柄</th><th>購入日</th><th>株数</th><th>取得</th><th>現在値</th><th>逆指値</th>
+<th>損益率</th><th>損益(円)</th><th>保有</th><th>次回決算</th></tr></thead>
+<tbody><tr>
+  <td><span class="code num">VLO</span>
+      <span class="nm">VALERO ENERGY CORP</span></td>
+  <td class="num dt">2026-08-07</td>
+  <td class="num">113</td>
+  <td class="num">298.65</td>
+  <td class="num">370.72</td>
+  <td class="num stop">328.41</td>
+  <td class="num up">+24.13%</td>
+  <td class="num up">1,272,263</td>
+  <td class="num">21</td>
+  <td>2026-10-22</td>
+</tr><tr>
+  <td><span class="code num">9107.T</span>
+      <span class="nm">川崎汽船</span></td>
+  <td class="num dt">2026-08-27</td>
+  <td class="num">1,900</td>
+  <td class="num">3,258</td>
+  <td class="num">3,328</td>
+  <td class="num stop">3,022</td>
+  <td class="num up">+2.16%</td>
+  <td class="num up">133,707</td>
+  <td class="num">7</td>
+  <td>2026-11-04</td>
+</tr><tr>
+  <td><span class="code num">7832.T</span>
+      <span class="nm">バンダイナムコホールディングス</span></td>
+  <td class="num dt">2026-08-10</td>
+  <td class="num">1,000</td>
+  <td class="num">5,301</td>
+  <td class="num">5,565</td>
+  <td class="num stop">5,105</td>
+  <td class="num up">+4.99%</td>
+  <td class="num up">264,351</td>
+  <td class="num">19</td>
+  <td>2026-11-05</td>
+</tr><tr>
+  <td><span class="code num">5301.T</span>
+      <span class="nm">東海カーボン</span></td>
+  <td class="num dt">2026-08-07</td>
+  <td class="num">3,000</td>
+  <td class="num">1,756</td>
+  <td class="num">1,820</td>
+  <td class="num stop">1,644</td>
+  <td class="num up">+3.62%</td>
+  <td class="num up">190,868</td>
+  <td class="num">20</td>
+  <td>2026-11-05</td>
+</tr><tr>
+  <td><span class="code num">HUM</span>
+      <span class="nm">HUMANA INC</span></td>
+  <td class="num dt">2026-08-07</td>
+  <td class="num">82</td>
+  <td class="num">364.18</td>
+  <td class="num">401.54</td>
+  <td class="num stop">353.69</td>
+  <td class="num up">+10.26%</td>
+  <td class="num up">478,561</td>
+  <td class="num">21</td>
+  <td>2026-11-06</td>
+</tr><tr>
+  <td><span class="code num">7272.T</span>
+      <span class="nm">ヤマハ発動機</span></td>
+  <td class="num dt">2026-08-07</td>
+  <td class="num">2,600</td>
+  <td class="num">1,873</td>
+  <td class="num">1,884</td>
+  <td class="num stop">1,697</td>
+  <td class="num up">+0.62%</td>
+  <td class="num up">30,066</td>
+  <td class="num">20</td>
+  <td>2026-11-05</td>
+</tr><tr>
+  <td><span class="code num">6098.T</span>
+      <span class="nm">リクルートホールディングス</span></td>
+  <td class="num dt">2026-08-25</td>
+  <td class="num">300</td>
+  <td class="num">16,363</td>
+  <td class="num">16,235</td>
+  <td class="num stop">15,710</td>
+  <td class="num down">-0.78%</td>
+  <td class="num down">-38,453</td>
+  <td class="num">9</td>
+  <td>2026-11-05</td>
+</tr><tr>
+  <td><span class="code num">6532.T</span>
+      <span class="nm">ベイカレント</span></td>
+  <td class="num dt">2026-08-07</td>
+  <td class="num">600</td>
+  <td class="num">6,965</td>
+  <td class="num">7,824</td>
+  <td class="num stop">7,063</td>
+  <td class="num up">+12.33%</td>
+  <td class="num up">515,301</td>
+  <td class="num">20</td>
+  <td>2026-10-15</td>
+</tr><tr>
+  <td><span class="code num">BAX</span>
+      <span class="nm">BAXTER INTERNATIONAL INC</span></td>
+  <td class="num dt">2026-08-07</td>
+  <td class="num">1,070</td>
+  <td class="num">26.93</td>
+  <td class="num">25.83</td>
+  <td class="num stop">22.99</td>
+  <td class="num down">-4.10%</td>
+  <td class="num down">-184,386</td>
+  <td class="num">21</td>
+  <td>2026-10-29</td>
+</tr><tr>
+  <td><span class="code num">6752.T</span>
+      <span class="nm">パナソニックホールディングス</span></td>
+  <td class="num dt">2026-08-07</td>
+  <td class="num">800</td>
+  <td class="num">4,439</td>
+  <td class="num">4,163</td>
+  <td class="num stop">3,886</td>
+  <td class="num down">-6.22%</td>
+  <td class="num down">-220,975</td>
+  <td class="num">20</td>
+  <td>2026-10-29</td>
+</tr><tr>
+  <td><span class="code num">MU</span>
+      <span class="nm">MICRON TECHNOLOGY INC</span></td>
+  <td class="num dt">2026-08-26</td>
+  <td class="num">19</td>
+  <td class="num">926.20</td>
+  <td class="num">1,016.59</td>
+  <td class="num stop">797.23</td>
+  <td class="num up">+9.76%</td>
+  <td class="num up">268,287</td>
+  <td class="num">8</td>
+  <td>2026-09-30</td>
+</tr><tr>
+  <td><span class="code num">9147.T</span>
+      <span class="nm">ＮＩＰＰＯＮＥＸＰＲＥＳＳホールディングス</span></td>
+  <td class="num dt">2026-08-10</td>
+  <td class="num">500</td>
+  <td class="num">5,478</td>
+  <td class="num">5,612</td>
+  <td class="num stop">5,314</td>
+  <td class="num up">+2.45%</td>
+  <td class="num up">67,131</td>
+  <td class="num">19</td>
+  <td>2026-11-11</td>
+</tr></tbody></table></div>
+</section>
+
+<section>
+  <h2>資産推移 (開始時 = 100)</h2>
+  <div class="chart-wrap"><svg viewBox="0 0 840 300" role="img" aria-label="資産推移とベンチマークの比較"><line class="grid" x1="46" y1="274.0" x2="828" y2="274.0" /><text class="axis" x="38" y="277.5" text-anchor="end">97</text><line class="grid" x1="46" y1="209.0" x2="828" y2="209.0" /><text class="axis" x="38" y="212.5" text-anchor="end">99</text><line class="grid" x1="46" y1="144.0" x2="828" y2="144.0" /><text class="axis" x="38" y="147.5" text-anchor="end">102</text><line class="grid" x1="46" y1="79.0" x2="828" y2="79.0" /><text class="axis" x="38" y="82.5" text-anchor="end">104</text><line class="grid" x1="46" y1="14.0" x2="828" y2="14.0" /><text class="axis" x="38" y="17.5" text-anchor="end">106</text><line class="baseline" x1="46" y1="191.9" x2="828" y2="191.9" /><polygon class="area" points="46,274.0 46.0,191.9 73.0,181.0 153.9,134.4 180.8,133.1 207.8,105.7 234.8,95.0 261.7,81.1 342.6,114.2 369.6,125.0 396.6,171.5 423.5,174.5 450.5,171.1 531.4,161.6 558.3,167.0 585.3,146.4 612.3,146.7 639.2,119.5 720.1,89.4 747.1,77.3 774.1,119.1 801.0,116.7 828.0,137.2 828.0,274.0" /><polyline class="line strat" points="46.0,191.9 73.0,181.0 153.9,134.4 180.8,133.1 207.8,105.7 234.8,95.0 261.7,81.1 342.6,114.2 369.6,125.0 396.6,171.5 423.5,174.5 450.5,171.1 531.4,161.6 558.3,167.0 585.3,146.4 612.3,146.7 639.2,119.5 720.1,89.4 747.1,77.3 774.1,119.1 801.0,116.7 828.0,137.2" /><polyline class="line bm1" points="46.0,191.9 73.0,157.2 153.9,168.3 180.8,153.5 207.8,143.6 234.8,120.6 261.7,124.9 342.6,143.7 369.6,162.5 396.6,151.9 423.5,202.6 450.5,178.3 531.4,187.0 558.3,172.6 585.3,170.3 612.3,149.4 639.2,155.2 720.1,148.9 747.1,177.5 774.1,155.1 801.0,147.5 828.0,212.3" /><polyline class="line bm2" points="46.0,191.9 73.0,193.2 153.9,131.8 180.8,131.8 207.8,103.8 234.8,68.1 261.7,51.4 342.6,27.9 369.6,111.0 396.6,205.9 423.5,166.6 450.5,176.5 531.4,199.6 558.3,181.5 585.3,165.7 612.3,172.9 639.2,161.6 720.1,163.0 747.1,169.7 774.1,258.3 801.0,260.1 828.0,221.7" /><polyline class="line bm3" points="46.0,191.9 73.0,175.2 153.9,150.1 180.8,142.6 207.8,123.7 234.8,94.3 261.7,88.1 342.6,85.8 369.6,136.7 396.6,178.9 423.5,184.6 450.5,177.4 531.4,193.3 558.3,177.0 585.3,168.0 612.3,161.1 639.2,158.4 720.1,155.9 747.1,173.6 774.1,206.7 801.0,203.8 828.0,217.0" /><circle class="endpoint" cx="828.0" cy="137.2" r="3.5" /></svg></div><ul class="legend"><li><span class="swatch strat"></span>戦略<b class="num">101.8</b></li><li><span class="swatch bm1"></span>S&amp;P500(円換算)<b class="num">99.3</b></li><li><span class="swatch bm2"></span>日経225(配当込)<b class="num">99.0</b></li><li><span class="swatch bm3"></span>50/50 複合<b class="num">99.2</b></li></ul>
+</section>
+
+<section>
+  <h2>直近の約定履歴</h2>
+  <div class="table-wrap"><table class="grid-table">
+<thead><tr><th>決済日</th><th>銘柄</th><th>建玉日</th><th>保有</th>
+<th>損益率</th><th>損益(円)</th><th>手仕舞い理由</th></tr></thead>
+<tbody><tr>
+  <td class="num dt">09/01</td>
+  <td><span class="code num">DELL</span>
+      <span class="nm">DELL TECHNOLOGIES  C</span></td>
+  <td class="num dt">08/07</td>
+  <td class="num">17</td>
+  <td class="num up">+2.31%</td>
+  <td class="num up">80,618</td>
+  <td>決算回避</td>
+</tr><tr>
+  <td class="num dt">08/25</td>
+  <td><span class="code num">4004.T</span>
+      <span class="nm">レゾナック・ホールディングス</span></td>
+  <td class="num dt">08/10</td>
+  <td class="num">10</td>
+  <td class="num down">-5.67%</td>
+  <td class="num down">-92,588</td>
+  <td>モメンタム失速</td>
+</tr><tr>
+  <td class="num dt">08/25</td>
+  <td><span class="code num">PANW</span>
+      <span class="nm">PALO ALTO NETWORKS INC</span></td>
+  <td class="num dt">08/07</td>
+  <td class="num">12</td>
+  <td class="num down">-8.20%</td>
+  <td class="num down">-364,764</td>
+  <td>ストップ</td>
+</tr><tr>
+  <td class="num dt">08/21</td>
+  <td><span class="code num">8750.T</span>
+      <span class="nm">第一ライフグループ</span></td>
+  <td class="num dt">08/10</td>
+  <td class="num">8</td>
+  <td class="num down">-5.54%</td>
+  <td class="num down">-421,503</td>
+  <td>モメンタム失速</td>
+</tr><tr>
+  <td class="num dt">08/19</td>
+  <td><span class="code num">4385.T</span>
+      <span class="nm">メルカリ</span></td>
+  <td class="num dt">08/07</td>
+  <td class="num">7</td>
+  <td class="num down">-6.73%</td>
+  <td class="num down">-299,499</td>
+  <td>モメンタム失速</td>
+</tr></tbody></table></div>
+</section>
+
+<footer>
+  <span><strong>市場レジーム</strong> JP: 順張り可 / US: 順張り可</span>
+  <span><strong>ルール</strong> 押し目型(RSI3&lt;30) / 4.0×ATR14 トレーリング / 最大250営業日 / 1トレードリスク 1% / 最大12銘柄 / 決算10日前から回避</span>
+  <span>本ダッシュボードは教育・検証目的のツールです。過去の成績は将来の成果を保証しません。</span>
+</footer>
+</div></body></html>
