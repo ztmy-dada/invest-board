@@ -2,7 +2,17 @@
 <html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<meta http-equiv="refresh" content="300">
+<noscript><meta http-equiv="refresh" content="300"></noscript>
+<script>(function () {
+  var last = Date.now(), every = 300 * 1000, loaded = Date.now();
+  ["pointerdown", "wheel", "keydown"].forEach(function (t) {
+    document.addEventListener(t, function () { last = Date.now(); }, { passive: true });
+  });
+  setInterval(function () {
+    if (document.visibilityState === "visible" && Date.now() - loaded >= every &&
+        Date.now() - last >= 60000) location.reload();
+  }, 15000);
+})();</script>
 <title>売買シグナル ダッシュボード</title>
 <style>*,*::before,*::after{box-sizing:border-box;} body,h1,h2,h3,p,dl,dd,ul{margin:0;}
 
@@ -152,11 +162,49 @@ footer strong{color:var(--ink-2); font-weight:600;}
   .tickets{grid-template-columns:1fr;}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important;}}
+
+.eq{background:var(--card); border:1px solid var(--rule); border-radius:6px;
+    padding:12px 12px 12px; display:flex; flex-direction:column; gap:10px;}
+.eq-bar{display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; align-items:center;}
+.seg,.zoom{display:inline-flex; border:1px solid var(--rule); border-radius:5px; overflow:hidden;}
+.seg button,.zoom button{font:inherit; font-size:.78rem; color:var(--ink-2); background:transparent;
+    border:0; padding:6px 11px; min-height:34px; cursor:pointer;}
+.seg button+button,.zoom button+button{border-left:1px solid var(--rule);}
+.seg button:hover,.zoom button:hover{background:var(--rule-2);}
+.seg button.on{background:var(--ink); color:var(--card); font-weight:600;}
+.seg button:disabled{color:var(--ink-3); opacity:.45; cursor:default; background:transparent;}
+.zoom button{min-width:40px; font-size:1.05rem; line-height:1;}
+.eq button:focus-visible{outline:2px solid var(--down); outline-offset:-2px;}
+.eq-box{position:relative; height:clamp(240px, 56vw, 380px); touch-action:pan-y;
+    user-select:none; -webkit-user-select:none; cursor:grab;}
+.eq-box.dragging{cursor:grabbing;}
+.eq-svg{display:block; width:100%; height:100%;}
+.eq-svg .axis{font-size:11px;}
+.eq-svg .tick{stroke:var(--rule); stroke-width:1;}
+.eq-svg .cross{stroke:var(--ink-3); stroke-width:1; stroke-dasharray:3 3;}
+.eq-svg .hdot{stroke:var(--card); stroke-width:1.5;}
+.eq-svg .hdot.strat{fill:var(--ink);} .eq-svg .hdot.bm1{fill:var(--down);}
+.eq-svg .hdot.bm2{fill:var(--up);} .eq-svg .hdot.bm3{fill:var(--ink-3);}
+.eq-tip{position:absolute; top:8px; left:0; pointer-events:none; z-index:2;
+    background:var(--card); border:1px solid var(--rule); border-radius:5px; box-shadow:var(--shadow);
+    padding:7px 10px; font-size:.75rem; min-width:170px; display:flex; flex-direction:column; gap:3px;}
+.eq-tip .td{color:var(--ink-3); font-size:.72rem;}
+.eq-tip .tr{display:flex; align-items:center; gap:7px;}
+.eq-tip .tn{flex:1; color:var(--ink-2);}
+.eq-foot{display:flex; flex-wrap:wrap; gap:4px 14px; justify-content:space-between;
+    font-size:.74rem; color:var(--ink-3);}
+.eq-legend{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:6px;}
+.eq-legend button{font:inherit; font-size:.78rem; display:inline-flex; align-items:center; gap:7px;
+    padding:6px 11px; border:1px solid var(--rule); border-radius:999px; background:transparent;
+    color:var(--ink-2); cursor:pointer;}
+.eq-legend button.off{opacity:.45;}
+.eq-legend button.off .lgn{text-decoration:line-through;}
+.eq-legend b{font-weight:600;}
 </style></head><body><div class="page">
 <header class="masthead">
   <span class="tag">Swing Strategy · Demo</span>
   <h1>売買シグナル ダッシュボード</h1>
-  <span class="asof">データ基準 2026-10-30<br>生成 2026-11-01 07:03</span>
+  <span class="asof">データ基準 2026-10-30<br>生成 2026-11-01 09:08</span>
 </header>
 
 <p class="notice"><strong>これはデモトレード(仮想売買)の記録です。</strong>
@@ -341,8 +389,357 @@ footer strong{color:var(--ink-2); font-weight:600;}
 </section>
 
 <section>
-  <h2>資産推移 (開始時 = 100)</h2>
-  <div class="chart-wrap"><svg viewBox="0 0 840 300" role="img" aria-label="資産推移とベンチマークの比較"><line class="grid" x1="46" y1="274.0" x2="828" y2="274.0" /><text class="axis" x="38" y="277.5" text-anchor="end">-5</text><line class="grid" x1="46" y1="209.0" x2="828" y2="209.0" /><text class="axis" x="38" y="212.5" text-anchor="end">25</text><line class="grid" x1="46" y1="144.0" x2="828" y2="144.0" /><text class="axis" x="38" y="147.5" text-anchor="end">55</text><line class="grid" x1="46" y1="79.0" x2="828" y2="79.0" /><text class="axis" x="38" y="82.5" text-anchor="end">86</text><line class="grid" x1="46" y1="14.0" x2="828" y2="14.0" /><text class="axis" x="38" y="17.5" text-anchor="end">116</text><line class="baseline" x1="46" y1="47.9" x2="828" y2="47.9" /><polygon class="area" points="46,274.0 46.0,47.9 55.2,47.0 82.8,44.0 92.0,43.9 101.2,41.6 110.4,40.9 119.6,40.1 147.2,42.4 156.4,43.1 165.6,46.4 174.8,47.2 184.0,46.8 211.6,46.1 220.8,46.2 230.0,44.7 239.2,44.3 248.4,42.6 276.0,40.3 285.2,39.5 294.4,42.6 303.6,42.6 312.8,43.9 340.4,43.3 349.6,46.5 358.8,45.9 368.0,46.6 377.2,44.6 404.8,44.4 414.0,43.6 423.2,41.6 432.4,38.1 441.6,38.0 469.2,38.6 478.4,39.5 487.6,39.6 496.8,39.9 506.0,37.0 533.6,39.4 542.8,38.7 552.0,38.2 561.2,37.6 570.4,36.1 598.0,34.3 607.2,33.6 616.4,33.7 625.6,33.1 634.8,28.7 662.4,29.2 671.6,27.9 680.8,28.2 690.0,31.9 699.2,33.1 726.8,32.6 736.0,32.9 745.2,31.2 754.4,35.3 763.6,36.9 791.2,34.2 800.4,33.8 809.6,35.6 818.8,35.6 828.0,34.9 828.0,274.0" /><polyline class="line strat" points="46.0,47.9 55.2,47.0 82.8,44.0 92.0,43.9 101.2,41.6 110.4,40.9 119.6,40.1 147.2,42.4 156.4,43.1 165.6,46.4 174.8,47.2 184.0,46.8 211.6,46.1 220.8,46.2 230.0,44.7 239.2,44.3 248.4,42.6 276.0,40.3 285.2,39.5 294.4,42.6 303.6,42.6 312.8,43.9 340.4,43.3 349.6,46.5 358.8,45.9 368.0,46.6 377.2,44.6 404.8,44.4 414.0,43.6 423.2,41.6 432.4,38.1 441.6,38.0 469.2,38.6 478.4,39.5 487.6,39.6 496.8,39.9 506.0,37.0 533.6,39.4 542.8,38.7 552.0,38.2 561.2,37.6 570.4,36.1 598.0,34.3 607.2,33.6 616.4,33.7 625.6,33.1 634.8,28.7 662.4,29.2 671.6,27.9 680.8,28.2 690.0,31.9 699.2,33.1 726.8,32.6 736.0,32.9 745.2,31.2 754.4,35.3 763.6,36.9 791.2,34.2 800.4,33.8 809.6,35.6 818.8,35.6 828.0,34.9" /><polyline class="line bm1" points="46.0,47.9 55.2,45.5 82.8,46.3 92.0,45.3 101.2,44.6 110.4,43.0 119.6,43.3 147.2,44.6 156.4,45.9 165.6,45.1 174.8,48.7 184.0,47.0 211.6,47.6 220.8,46.6 230.0,46.4 239.2,45.0 248.4,45.4 276.0,44.9 285.2,46.9 294.4,45.4 303.6,44.8 312.8,50.1 340.4,49.4 349.6,53.7 358.8,55.2 368.0,56.3 377.2,53.4 404.8,55.7 414.0,55.4 423.2,55.1 432.4,51.7 441.6,51.3 469.2,46.8 478.4,46.4 487.6,47.8 496.8,46.9 506.0,45.0 533.6,48.4 542.8,49.0 552.0,49.3 561.2,48.7 570.4,46.7 598.0,45.5 607.2,44.0 616.4,44.0 625.6,45.3 634.8,44.0 662.4,43.9 671.6,43.5 680.8,46.1 690.0,46.0 699.2,48.2 726.8,47.7 736.0,46.0 745.2,45.2 754.4,48.0 763.6,51.3 791.2,49.3 800.4,47.2 809.6,45.8 818.8,46.9 828.0,50.7" /><polyline class="line bm2" points="46.0,47.9 55.2,48.0 82.8,43.7 92.0,43.7 101.2,41.8 110.4,39.3 119.6,38.1 147.2,36.5 156.4,42.3 165.6,48.9 174.8,46.2 184.0,46.9 211.6,48.5 220.8,47.2 230.0,46.1 239.2,46.6 248.4,45.8 276.0,45.9 285.2,46.4 294.4,52.6 303.6,52.7 312.8,50.0 340.4,45.7 349.6,49.5 358.8,50.0 368.0,49.5 377.2,53.4 404.8,54.7 414.0,54.7 423.2,53.7 432.4,52.8 441.6,49.8 469.2,49.8 478.4,49.8 487.6,49.8 496.8,48.4 506.0,45.6 533.6,47.3 542.8,47.6 552.0,42.8 561.2,35.9 570.4,38.3 598.0,260.1 607.2,260.0 616.4,32.2 625.6,35.5 634.8,35.7 662.4,35.7 671.6,39.7 680.8,39.6 690.0,50.1 699.2,47.6 726.8,49.0 736.0,51.6 745.2,50.0 754.4,55.2 763.6,56.4 791.2,57.9 800.4,54.4 809.6,52.1 818.8,50.3 828.0,54.9" /><polyline class="line bm3" points="46.0,47.9 55.2,46.8 82.8,45.0 92.0,44.5 101.2,43.2 110.4,41.1 119.6,40.7 147.2,40.5 156.4,44.1 165.6,47.0 174.8,47.4 184.0,46.9 211.6,48.0 220.8,46.9 230.0,46.3 239.2,45.8 248.4,45.6 276.0,45.4 285.2,46.7 294.4,49.0 303.6,48.8 312.8,50.1 340.4,47.6 349.6,51.6 358.8,52.6 368.0,52.9 377.2,53.4 404.8,55.2 414.0,55.0 423.2,54.4 432.4,52.3 441.6,50.6 469.2,48.3 478.4,48.1 487.6,48.8 496.8,47.6 506.0,45.3 533.6,47.8 542.8,48.3 552.0,46.1 561.2,42.3 570.4,42.5 598.0,152.8 607.2,152.0 616.4,38.1 625.6,40.4 634.8,39.9 662.4,39.8 671.6,41.6 680.8,42.9 690.0,48.1 699.2,47.9 726.8,48.3 736.0,48.8 745.2,47.6 754.4,51.6 763.6,53.9 791.2,53.6 800.4,50.8 809.6,49.0 818.8,48.6 828.0,52.8" /><circle class="endpoint" cx="828.0" cy="34.9" r="3.5" /></svg></div><ul class="legend"><li><span class="swatch strat"></span>戦略<b class="num">106.1</b></li><li><span class="swatch bm1"></span>S&amp;P500(円換算)<b class="num">98.7</b></li><li><span class="swatch bm2"></span>日経225(配当込)<b class="num">96.7</b></li><li><span class="swatch bm3"></span>50/50 複合<b class="num">97.7</b></li></ul>
+  <h2>資産推移</h2>
+  <div class="eq" data-equity-chart>
+  <div class="eq-bar">
+    <div class="seg" role="group" aria-label="表示期間"><button type="button" data-days="21" aria-pressed="false">1ヶ月</button><button type="button" data-days="63" aria-pressed="false">3ヶ月</button><button type="button" data-days="126" aria-pressed="false">6ヶ月</button><button type="button" data-days="252" aria-pressed="false">1年</button><button type="button" data-days="0" aria-pressed="false">全期間</button></div>
+    <div class="zoom" role="group" aria-label="拡大縮小">
+      <button type="button" data-zoom="out" aria-label="縮小">&minus;</button>
+      <button type="button" data-zoom="in" aria-label="拡大">+</button>
+    </div>
+  </div>
+  <div class="eq-box">
+    <svg class="eq-svg" role="img" aria-label="資産推移とベンチマークの比較"></svg>
+    <div class="eq-tip" hidden></div>
+  </div>
+  <div class="eq-foot">
+    <span class="eq-range num"></span>
+    <span class="eq-help">ドラッグで移動 / ピンチ・ホイールで拡大縮小 / ダブルタップで全期間</span>
+  </div>
+  <ul class="eq-legend"></ul>
+</div>
+<script type="application/json" id="equity-data">{"dates": ["2026-08-06", "2026-08-07", "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13", "2026-08-14", "2026-08-17", "2026-08-18", "2026-08-19", "2026-08-20", "2026-08-21", "2026-08-24", "2026-08-25", "2026-08-26", "2026-08-27", "2026-08-28", "2026-08-31", "2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04", "2026-09-07", "2026-09-08", "2026-09-09", "2026-09-10", "2026-09-11", "2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17", "2026-09-18", "2026-09-21", "2026-09-22", "2026-09-23", "2026-09-24", "2026-09-25", "2026-09-28", "2026-09-29", "2026-09-30", "2026-10-01", "2026-10-02", "2026-10-05", "2026-10-06", "2026-10-07", "2026-10-08", "2026-10-09", "2026-10-12", "2026-10-13", "2026-10-14", "2026-10-15", "2026-10-16", "2026-10-19", "2026-10-20", "2026-10-21", "2026-10-22", "2026-10-23", "2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29", "2026-10-30"], "series": [{"name": "戦略", "cls": "strat", "values": [80000000.0, 80345980.9, 81469497.3, 81502651.4, 82375811.2, 82646054.1, 82916130.5, 82073582.7, 81821221.4, 80577184.8, 80260170.5, 80425424.7, 80691803.6, 80635968.4, 81215043.5, 81358834.4, 82006686.8, 82870400.6, 83161675.2, 81979170.7, 82005274.0, 81497767.2, 81740722.5, 80549062.1, 80752049.2, 80504600.4, 81232466.0, 81307807.8, 81608489.5, 82361610.5, 83677886.7, 83706113.0, 83493448.0, 83145364.0, 83102814.9, 83007530.9, 84090647.4, 83198445.7, 83439560.1, 83653493.0, 83847798.4, 84409597.0, 85083122.8, 85363276.0, 85322412.3, 85519973.5, 87170057.9, 87004642.8, 87467750.3, 87362466.0, 85996034.6, 85531682.6, 85725617.5, 85624109.0, 86256077.6, 84732729.4, 84104831.3, 85138361.6, 85274261.3, 84623067.0, 84601681.2, 84862408.2]}, {"name": "S&P500(円換算)", "cls": "bm1", "values": [80000000.0, 80902392.6, 80613860.3, 81000085.6, 81258568.7, 81857920.9, 81746108.2, 81256074.3, 80766428.6, 81042530.9, 79720101.1, 80353234.9, 80127717.0, 80502678.7, 80563052.7, 81107266.1, 80956728.2, 81120501.7, 80374494.2, 80958022.2, 81155458.3, 79182808.1, 79455976.3, 77834773.9, 77283183.7, 76867477.7, 77981575.2, 77101960.0, 77229039.1, 77327239.3, 78580785.3, 78739908.1, 80430411.1, 80583330.0, 80051252.5, 80392442.8, 81108270.3, 79821370.4, 79622755.4, 79480894.9, 79700528.4, 80477987.3, 80921665.5, 81484703.1, 81460483.4, 80994723.1, 81481867.9, 81504802.8, 81658676.5, 80675080.3, 80718129.6, 79918969.9, 80086147.7, 80719769.9, 81013291.3, 79987750.5, 78745765.5, 79475571.0, 80276741.7, 80790922.8, 80400817.1, 78960881.0]}, {"name": "日経225(配当込)", "cls": "bm2", "values": [80000000.0, 79964694.9, 81564934.5, 81564934.5, 82294455.0, 83223999.1, 83659358.7, 84271214.8, 82106187.7, 79635236.2, 80658917.5, 80400054.5, 79799969.2, 80270626.6, 80682451.8, 80494184.6, 80788345.5, 80753047.6, 80576551.0, 78270332.5, 78223263.9, 79223410.9, 80835414.1, 79435205.3, 79246945.2, 79423441.8, 77952637.3, 77493743.4, 77470216.3, 77870270.8, 78187966.0, 79294013.9, 79294013.9, 79294013.9, 79294013.9, 79847030.6, 80870711.9, 80258855.8, 80129427.9, 81917927.6, 84494772.7, 83588762.9, 83588762.9, 83588762.9, 85859683.6, 84659505.7, 84553604.9, 84553604.9, 83082800.4, 83118105.5, 79199876.6, 80141191.5, 79611701.9, 78623325.6, 79235181.7, 77305483.3, 76846589.5, 76293572.7, 77599644.2, 78435058.3, 79105746.6, 77387849.8]}, {"name": "50/50 複合", "cls": "bm3", "values": [80000000.0, 80433543.8, 81089397.4, 81282510.0, 81776511.8, 82540960.0, 82702733.5, 82763644.5, 81436308.1, 80338883.5, 80189509.3, 80376644.7, 79963843.1, 80386652.7, 80622752.3, 80800725.3, 80872536.9, 80936774.7, 80475522.6, 79614177.4, 79689361.1, 79203109.5, 80145695.2, 78634989.6, 78265064.5, 78145459.7, 77967106.3, 77297851.7, 77349627.7, 77598755.0, 78384375.7, 79016961.0, 79862212.5, 79938671.9, 79672633.2, 80119736.7, 80989491.1, 80040113.1, 79876091.7, 80699411.3, 82097650.6, 82033375.1, 82255214.2, 82536733.0, 83660083.5, 82827114.4, 83017736.4, 83029203.9, 82370738.4, 81896592.9, 79959003.1, 80030080.7, 79848924.8, 79671547.7, 80124236.5, 78646616.9, 77796177.5, 77884571.8, 78938192.9, 79612990.5, 79753281.8, 78174365.4]}]}</script>
+<noscript><div class="chart-wrap"><svg viewBox="0 0 840 300" role="img" aria-label="資産推移とベンチマークの比較"><line class="grid" x1="46" y1="274.0" x2="828" y2="274.0" /><text class="axis" x="38" y="277.5" text-anchor="end">95</text><line class="grid" x1="46" y1="209.0" x2="828" y2="209.0" /><text class="axis" x="38" y="212.5" text-anchor="end">98</text><line class="grid" x1="46" y1="144.0" x2="828" y2="144.0" /><text class="axis" x="38" y="147.5" text-anchor="end">102</text><line class="grid" x1="46" y1="79.0" x2="828" y2="79.0" /><text class="axis" x="38" y="82.5" text-anchor="end">106</text><line class="grid" x1="46" y1="14.0" x2="828" y2="14.0" /><text class="axis" x="38" y="17.5" text-anchor="end">110</text><line class="baseline" x1="46" y1="183.1" x2="828" y2="183.1" /><polygon class="area" points="46,274.0 46.0,183.1 55.2,175.9 82.8,152.5 92.0,151.9 101.2,133.7 110.4,128.1 119.6,122.5 147.2,140.0 156.4,145.2 165.6,171.1 174.8,177.7 184.0,174.2 211.6,168.7 220.8,169.9 230.0,157.8 239.2,154.8 248.4,141.4 276.0,123.4 285.2,117.4 294.4,142.0 303.6,141.4 312.8,152.0 340.4,146.9 349.6,171.7 358.8,167.4 368.0,172.6 377.2,157.5 404.8,155.9 414.0,149.7 423.2,134.0 432.4,106.7 441.6,106.1 469.2,110.5 478.4,117.7 487.6,118.6 496.8,120.6 506.0,98.1 533.6,116.6 542.8,111.6 552.0,107.2 561.2,103.1 570.4,91.5 598.0,77.5 607.2,71.6 616.4,72.5 625.6,68.4 634.8,34.1 662.4,37.5 671.6,27.9 680.8,30.1 690.0,58.5 699.2,68.2 726.8,64.1 736.0,66.2 745.2,53.1 754.4,84.7 763.6,97.8 791.2,76.3 800.4,73.5 809.6,87.0 818.8,87.5 828.0,82.1 828.0,274.0" /><polyline class="line strat" points="46.0,183.1 55.2,175.9 82.8,152.5 92.0,151.9 101.2,133.7 110.4,128.1 119.6,122.5 147.2,140.0 156.4,145.2 165.6,171.1 174.8,177.7 184.0,174.2 211.6,168.7 220.8,169.9 230.0,157.8 239.2,154.8 248.4,141.4 276.0,123.4 285.2,117.4 294.4,142.0 303.6,141.4 312.8,152.0 340.4,146.9 349.6,171.7 358.8,167.4 368.0,172.6 377.2,157.5 404.8,155.9 414.0,149.7 423.2,134.0 432.4,106.7 441.6,106.1 469.2,110.5 478.4,117.7 487.6,118.6 496.8,120.6 506.0,98.1 533.6,116.6 542.8,111.6 552.0,107.2 561.2,103.1 570.4,91.5 598.0,77.5 607.2,71.6 616.4,72.5 625.6,68.4 634.8,34.1 662.4,37.5 671.6,27.9 680.8,30.1 690.0,58.5 699.2,68.2 726.8,64.1 736.0,66.2 745.2,53.1 754.4,84.7 763.6,97.8 791.2,76.3 800.4,73.5 809.6,87.0 818.8,87.5 828.0,82.1" /><polyline class="line bm1" points="46.0,183.1 55.2,164.3 82.8,170.3 92.0,162.3 101.2,156.9 110.4,144.5 119.6,146.8 147.2,157.0 156.4,167.1 165.6,161.4 174.8,188.9 184.0,175.7 211.6,180.4 220.8,172.6 230.0,171.4 239.2,160.1 248.4,163.2 276.0,159.8 285.2,175.3 294.4,163.2 303.6,159.1 312.8,200.0 340.4,194.4 349.6,228.1 358.8,239.5 368.0,248.1 377.2,225.0 404.8,243.3 414.0,240.6 423.2,238.6 432.4,212.6 441.6,209.2 469.2,174.1 478.4,171.0 487.6,182.0 496.8,174.9 506.0,160.0 533.6,186.8 542.8,190.9 552.0,193.9 561.2,189.3 570.4,173.1 598.0,163.9 607.2,152.2 616.4,152.7 625.6,162.4 634.8,152.3 662.4,151.8 671.6,148.6 680.8,169.0 690.0,168.2 699.2,184.8 726.8,181.3 736.0,168.1 745.2,162.0 754.4,183.3 763.6,209.1 791.2,194.0 800.4,177.3 809.6,166.6 818.8,174.7 828.0,204.7" /><polyline class="line bm2" points="46.0,183.1 55.2,183.8 82.8,150.6 92.0,150.6 101.2,135.4 110.4,116.1 119.6,107.0 147.2,94.3 156.4,139.3 165.6,190.6 174.8,169.4 184.0,174.8 211.6,187.2 220.8,177.4 230.0,168.9 239.2,172.8 248.4,166.7 276.0,167.4 285.2,171.1 294.4,219.0 303.6,220.0 312.8,199.2 340.4,165.7 349.6,194.8 358.8,198.7 368.0,195.0 377.2,225.6 404.8,235.1 414.0,235.6 423.2,227.3 432.4,220.7 441.6,197.7 469.2,197.7 478.4,197.7 487.6,197.7 496.8,186.2 506.0,165.0 533.6,177.7 542.8,180.4 552.0,143.2 561.2,89.7 570.4,108.5 598.0,108.5 607.2,108.5 616.4,61.3 625.6,86.3 634.8,88.5 662.4,88.5 671.6,119.0 680.8,118.3 690.0,199.7 699.2,180.1 726.8,191.1 736.0,211.7 745.2,199.0 754.4,239.0 763.6,248.6 791.2,260.1 800.4,232.9 809.6,215.6 818.8,201.6 828.0,237.3" /><polyline class="line bm3" points="46.0,183.1 55.2,174.1 82.8,160.4 92.0,156.4 101.2,146.2 110.4,130.3 119.6,126.9 147.2,125.7 156.4,153.2 165.6,176.0 174.8,179.1 184.0,175.2 211.6,183.8 220.8,175.0 230.0,170.1 239.2,166.4 248.4,164.9 276.0,163.6 285.2,173.2 294.4,191.1 303.6,189.5 312.8,199.6 340.4,180.0 349.6,211.4 358.8,219.1 368.0,221.6 377.2,225.3 404.8,239.2 414.0,238.1 423.2,233.0 432.4,216.6 441.6,203.5 469.2,185.9 478.4,184.3 487.6,189.9 496.8,180.6 506.0,162.5 533.6,182.2 542.8,185.6 552.0,168.5 561.2,139.5 570.4,140.8 598.0,136.2 607.2,130.4 616.4,107.0 625.6,124.3 634.8,120.4 662.4,120.1 671.6,133.8 680.8,143.7 690.0,183.9 699.2,182.4 726.8,186.2 736.0,189.9 745.2,180.5 754.4,211.2 763.6,228.9 791.2,227.0 800.4,205.1 809.6,191.1 818.8,188.2 828.0,221.0" /><circle class="endpoint" cx="828.0" cy="82.1" r="3.5" /></svg></div><ul class="legend"><li><span class="swatch strat"></span>戦略<b class="num">106.1</b></li><li><span class="swatch bm1"></span>S&amp;P500(円換算)<b class="num">98.7</b></li><li><span class="swatch bm2"></span>日経225(配当込)<b class="num">96.7</b></li><li><span class="swatch bm3"></span>50/50 複合<b class="num">97.7</b></li></ul></noscript>
+<script>
+(function () {
+  var root = document.querySelector("[data-equity-chart]");
+  var raw = document.getElementById("equity-data");
+  if (!root || !raw) return;
+  var data = JSON.parse(raw.textContent);
+  var dates = data.dates, series = data.series, N = dates.length;
+  if (N < 2) return;
+
+  var box = root.querySelector(".eq-box"), svg = root.querySelector(".eq-svg");
+  var tip = root.querySelector(".eq-tip"), rangeEl = root.querySelector(".eq-range");
+  var legendEl = root.querySelector(".eq-legend");
+  var segBtns = Array.prototype.slice.call(root.querySelectorAll("[data-days]"));
+  var KEY = "equityChartView.v1";
+  var MIN_SPAN = Math.min(5, N - 1);
+  var view = { lo: 0, hi: N - 1 };
+  var hidden = {};
+  var hoverIdx = null;
+  var cur = null;
+
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  function ymd(d) { return d.split("-").join("/"); }
+  function pct(v) { return (v >= 0 ? "+" : "") + v.toFixed(1) + "%"; }
+
+  function setView(lo, hi) {
+    var span = Math.max(MIN_SPAN, Math.min(N - 1, hi - lo));
+    lo = Math.max(0, Math.min(lo, N - 1 - span));
+    view = { lo: lo, hi: lo + span };
+  }
+  function setDays(d) {
+    if (!d || d >= N - 1) setView(0, N - 1); else setView(N - 1 - d, N - 1);
+  }
+  function zoomAt(c, f) {
+    var span = view.hi - view.lo;
+    var ns = Math.max(MIN_SPAN, Math.min(N - 1, span * f));
+    var r = (c - view.lo) / span;
+    setView(c - r * ns, c - r * ns + ns);
+  }
+  function atEnd() { return view.hi >= N - 1.01; }
+
+  // ページは5分ごとに自動で再読み込みされるため、選んだ表示範囲を覚えておく
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({
+        full: view.lo <= 0.01 && atEnd(), span: view.hi - view.lo,
+        endOffset: N - 1 - view.hi, hidden: hidden }));
+    } catch (e) {}
+  }
+  function load() {
+    var s = null;
+    try { s = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
+    if (s && typeof s.span === "number") {
+      hidden = s.hidden || {};
+      if (s.full) { setView(0, N - 1); return; }
+      var hi = N - 1 - Math.max(0, s.endOffset || 0);
+      setView(hi - s.span, hi);
+      return;
+    }
+    setDays(N - 1 > 130 ? 126 : 0);
+  }
+
+  function niceStep(range, n) {
+    var rawStep = range / Math.max(1, n);
+    var mag = Math.pow(10, Math.floor(Math.log(rawStep) / Math.LN10));
+    var r = rawStep / mag;
+    return (r < 1.5 ? 1 : r < 3 ? 2 : r < 7 ? 5 : 10) * mag;
+  }
+
+  function render() {
+    var W = Math.max(240, box.clientWidth), H = Math.max(180, box.clientHeight);
+    var padL = 42, padR = 10, padT = 10, padB = 24;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+
+    var i0 = Math.max(0, Math.floor(view.lo)), i1 = Math.min(N - 1, Math.ceil(view.hi));
+    var b0 = Math.max(0, Math.min(N - 1, Math.ceil(view.lo - 1e-9)));
+    var bases = {};
+    series.forEach(function (s) {
+      for (var i = b0; i <= i1; i++) { if (s.values[i]) { bases[s.name] = s.values[i]; break; } }
+    });
+    function val(s, i) {
+      var v = s.values[i], b = bases[s.name];
+      return (v && b) ? v / b * 100 : null;
+    }
+    var vis = series.filter(function (s) { return !hidden[s.name]; });
+
+    var lo = Infinity, hi = -Infinity;
+    vis.forEach(function (s) {
+      for (var i = i0; i <= i1; i++) {
+        var v = val(s, i);
+        if (v !== null) { if (v < lo) lo = v; if (v > hi) hi = v; }
+      }
+    });
+    if (!isFinite(lo)) { svg.innerHTML = ""; return; }
+    if (hi - lo < 1) { var m = (hi + lo) / 2; lo = m - 0.5; hi = m + 0.5; }
+    var py = (hi - lo) * 0.08; lo -= py; hi += py;
+
+    function X(i) { return padL + (i - view.lo) / (view.hi - view.lo) * plotW; }
+    function Y(v) { return padT + (hi - v) / (hi - lo) * plotH; }
+    cur = { val: val, X: X, b0: b0, i1: i1 };
+
+    var out = [];
+    out.push('<defs><clipPath id="eqclip"><rect x="' + padL + '" y="' + padT + '" width="' +
+             plotW + '" height="' + plotH + '"/></clipPath></defs>');
+
+    var step = niceStep(hi - lo, Math.max(3, Math.round(plotH / 48)));
+    var dec = step < 1 ? 1 : 0;
+    for (var k = Math.ceil(lo / step); k * step <= hi; k++) {
+      var t = k * step, y = Y(t).toFixed(1);
+      out.push('<line class="grid" x1="' + padL + '" x2="' + (W - padR) + '" y1="' + y + '" y2="' + y + '"/>');
+      out.push('<text class="axis" x="' + (padL - 6) + '" y="' + (+y + 3.5).toFixed(1) +
+               '" text-anchor="end">' + t.toFixed(dec) + '</text>');
+    }
+    if (lo < 100 && hi > 100) {
+      var yb = Y(100).toFixed(1);
+      out.push('<line class="baseline" x1="' + padL + '" x2="' + (W - padR) + '" y1="' + yb + '" y2="' + yb + '"/>');
+    }
+
+    var spanDays = (Date.parse(dates[i1]) - Date.parse(dates[i0])) / 864e5;
+    var ticks = [], pxPer = plotW / (view.hi - view.lo);
+    if (spanDays > 100) {
+      for (var i = Math.max(1, i0); i <= i1; i++) {
+        if (dates[i].slice(0, 7) !== dates[i - 1].slice(0, 7)) ticks.push(i);
+      }
+    } else {
+      var every = Math.max(1, Math.ceil(64 / pxPer));
+      for (var j = Math.ceil(view.lo / every) * every; j <= i1; j += every) ticks.push(j);
+    }
+    var lastX = -1e9, firstLabel = true;
+    ticks.forEach(function (i) {
+      var x = X(i);
+      if (x < padL + 2 || x > W - padR - 2 || x - lastX < 52) return;
+      lastX = x;
+      var p = dates[i].split("-"), label;
+      if (spanDays > 100) label = (firstLabel || p[1] === "01") ? p[0] + "/" + (+p[1]) : (+p[1]) + "月";
+      else label = (+p[1]) + "/" + (+p[2]);
+      firstLabel = false;
+      out.push('<line class="tick" x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' +
+               (padT + plotH) + '" y2="' + (padT + plotH + 4) + '"/>');
+      out.push('<text class="axis" x="' + x.toFixed(1) + '" y="' + (H - 6) +
+               '" text-anchor="middle">' + label + '</text>');
+    });
+
+    out.push('<g clip-path="url(#eqclip)">');
+    var order = vis.filter(function (s) { return s.cls !== "strat"; })
+                   .concat(vis.filter(function (s) { return s.cls === "strat"; }));
+    order.forEach(function (s) {
+      var d = "", pts = [], pen = false;
+      for (var i = Math.max(0, i0 - 1); i <= Math.min(N - 1, i1 + 1); i++) {
+        var v = val(s, i);
+        if (v === null) { pen = false; continue; }
+        var x = X(i).toFixed(1), y = Y(v).toFixed(1);
+        d += (pen ? "L" : "M") + x + " " + y;
+        pts.push([x, y]);
+        pen = true;
+      }
+      if (!d) return;
+      if (s.cls === "strat" && pts.length > 1) {
+        var bottom = (padT + plotH).toFixed(1);
+        out.push('<path class="area" d="' + d + "L" + pts[pts.length - 1][0] + " " + bottom +
+                 "L" + pts[0][0] + " " + bottom + 'Z"/>');
+      }
+      out.push('<path class="line ' + s.cls + '" d="' + d + '"/>');
+    });
+    out.push('</g>');
+
+    var strat = series[0];
+    if (!hidden[strat.name]) {
+      var ve = val(strat, i1);
+      if (ve !== null) out.push('<circle class="endpoint" cx="' + X(i1).toFixed(1) + '" cy="' +
+                                Y(ve).toFixed(1) + '" r="3.5"/>');
+    }
+
+    if (hoverIdx !== null) {
+      var hx = X(hoverIdx).toFixed(1);
+      out.push('<line class="cross" x1="' + hx + '" x2="' + hx + '" y1="' + padT + '" y2="' + (padT + plotH) + '"/>');
+      vis.forEach(function (s) {
+        var v = val(s, hoverIdx);
+        if (v !== null) out.push('<circle class="hdot ' + s.cls + '" cx="' + hx + '" cy="' + Y(v).toFixed(1) + '" r="4"/>');
+      });
+    }
+    svg.innerHTML = out.join("");
+
+    rangeEl.textContent = ymd(dates[b0]) + " 〜 " + ymd(dates[i1]) + "(" + (i1 - b0) +
+                          "営業日 / 表示開始 = 100)";
+    legendEl.innerHTML = series.map(function (s) {
+      var v = val(s, i1), off = !!hidden[s.name];
+      var cls = v === null ? "" : (v >= 100 ? "up" : "down");
+      return '<li><button type="button" class="' + (off ? "off" : "") + '" data-name="' + esc(s.name) +
+             '" aria-pressed="' + !off + '"><span class="swatch ' + s.cls + '"></span><span class="lgn">' +
+             esc(s.name) + '</span><b class="num ' + cls + '">' + (v === null ? "—" : pct(v - 100)) +
+             '</b></button></li>';
+    }).join("");
+    segBtns.forEach(function (b) {
+      var d = +b.getAttribute("data-days");
+      // データがまだその期間に満たないボタンは押せないようにする
+      b.disabled = !!d && d >= N - 1;
+      var on = !d ? (view.lo <= 0.01 && atEnd())
+                  : (!b.disabled && atEnd() && Math.abs((view.hi - view.lo) - d) < 0.5);
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+
+  function nearest(clientX) {
+    var r = svg.getBoundingClientRect();
+    var W = Math.max(240, box.clientWidth), plotW = W - 42 - 10;
+    var i = Math.round(view.lo + (clientX - r.left - 42) / plotW * (view.hi - view.lo));
+    return Math.max(Math.ceil(view.lo - 1e-9), Math.min(Math.floor(view.hi + 1e-9), i));
+  }
+  function idxAt(clientX) {
+    var r = svg.getBoundingClientRect();
+    var W = Math.max(240, box.clientWidth), plotW = W - 42 - 10;
+    return view.lo + (clientX - r.left - 42) / plotW * (view.hi - view.lo);
+  }
+  function hideTip() { tip.hidden = true; }
+  function showTip() {
+    if (hoverIdx === null || !cur) { hideTip(); return; }
+    var rows = series.filter(function (s) { return !hidden[s.name]; }).map(function (s) {
+      var v = cur.val(s, hoverIdx);
+      return '<div class="tr"><span class="swatch ' + s.cls + '"></span><span class="tn">' + esc(s.name) +
+             '</span><b class="num">' + (v === null ? "—" : v.toFixed(1) + "(" + pct(v - 100) + ")") +
+             '</b></div>';
+    }).join("");
+    tip.innerHTML = '<div class="td num">' + ymd(dates[hoverIdx]) + '</div>' + rows;
+    tip.hidden = false;
+    var x = cur.X(hoverIdx), tw = tip.offsetWidth, bw = box.clientWidth;
+    var left = x + 14;
+    if (left + tw > bw - 4) left = x - tw - 14;
+    tip.style.left = Math.max(4, left) + "px";
+  }
+  function commit() { save(); render(); showTip(); }
+
+  segBtns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      setDays(+b.getAttribute("data-days")); hoverIdx = null; hideTip(); commit();
+    });
+  });
+  root.querySelector('[data-zoom="in"]').addEventListener("click", function () {
+    zoomAt(atEnd() ? N - 1 : (view.lo + view.hi) / 2, 0.6); hoverIdx = null; hideTip(); commit();
+  });
+  root.querySelector('[data-zoom="out"]').addEventListener("click", function () {
+    zoomAt(atEnd() ? N - 1 : (view.lo + view.hi) / 2, 1 / 0.6); hoverIdx = null; hideTip(); commit();
+  });
+  legendEl.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-name]");
+    if (!b) return;
+    var n = b.getAttribute("data-name");
+    var shown = series.filter(function (s) { return !hidden[s.name]; }).length;
+    if (!hidden[n] && shown <= 1) return;
+    hidden[n] = !hidden[n];
+    commit();
+  });
+
+  var pointers = {}, drag = null, pinch = null, moved = false, lastTap = 0;
+  function ids() { return Object.keys(pointers); }
+  box.addEventListener("pointerdown", function (e) {
+    try { box.setPointerCapture(e.pointerId); } catch (err) {}
+    pointers[e.pointerId] = e.clientX;
+    var k = ids();
+    if (k.length === 1) { drag = { x: e.clientX, lo: view.lo, hi: view.hi }; moved = false; }
+    else if (k.length === 2) {
+      var a = pointers[k[0]], b = pointers[k[1]];
+      pinch = { d: Math.abs(a - b) || 1, lo: view.lo, hi: view.hi, c: idxAt((a + b) / 2) };
+      drag = null; moved = true;
+    }
+  });
+  box.addEventListener("pointermove", function (e) {
+    if (e.pointerId in pointers) pointers[e.pointerId] = e.clientX;
+    var k = ids();
+    if (pinch && k.length === 2) {
+      var d = Math.abs(pointers[k[0]] - pointers[k[1]]) || 1;
+      var span0 = pinch.hi - pinch.lo;
+      var ns = Math.max(MIN_SPAN, Math.min(N - 1, span0 * pinch.d / d));
+      var r = (pinch.c - pinch.lo) / span0;
+      setView(pinch.c - r * ns, pinch.c - r * ns + ns);
+      hoverIdx = null; hideTip(); render();
+      return;
+    }
+    if (drag) {
+      var dx = e.clientX - drag.x;
+      if (Math.abs(dx) > 5) { moved = true; box.classList.add("dragging"); }
+      if (moved) {
+        var W = Math.max(240, box.clientWidth), plotW = W - 42 - 10;
+        var di = -dx / plotW * (drag.hi - drag.lo);
+        setView(drag.lo + di, drag.hi + di);
+        hoverIdx = null; hideTip(); render();
+        return;
+      }
+    }
+    if (e.pointerType === "mouse" && !drag) {
+      hoverIdx = nearest(e.clientX); render(); showTip();
+    }
+  });
+  function endPointer(e) {
+    var wasTap = !!drag && !moved;
+    delete pointers[e.pointerId];
+    if (ids().length < 2) pinch = null;
+    if (ids().length === 0) {
+      box.classList.remove("dragging");
+      if (wasTap && e.type === "pointerup") {
+        var now = Date.now();
+        if (now - lastTap < 320) { setDays(0); hoverIdx = null; hideTip(); lastTap = 0; }
+        else { hoverIdx = nearest(e.clientX); lastTap = now; }
+      }
+      drag = null;
+      save(); render(); showTip();
+    }
+  }
+  box.addEventListener("pointerup", endPointer);
+  box.addEventListener("pointercancel", endPointer);
+  box.addEventListener("pointerleave", function (e) {
+    if (e.pointerType === "mouse" && !drag) { hoverIdx = null; hideTip(); render(); }
+  });
+  box.addEventListener("wheel", function (e) {
+    e.preventDefault();
+    zoomAt(idxAt(e.clientX), e.deltaY > 0 ? 1.15 : 1 / 1.15);
+    hoverIdx = null; hideTip(); commit();
+  }, { passive: false });
+  document.addEventListener("pointerdown", function (e) {
+    if (!box.contains(e.target) && hoverIdx !== null) { hoverIdx = null; hideTip(); render(); }
+  });
+
+  if (window.ResizeObserver) new ResizeObserver(function () { render(); showTip(); }).observe(box);
+  else window.addEventListener("resize", function () { render(); showTip(); });
+
+  load();
+  render();
+})();
+</script>
 </section>
 
 <section>
